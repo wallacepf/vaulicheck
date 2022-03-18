@@ -67,18 +67,12 @@ app "vaulicheck-wp" {
   }
 
   build {
-    use "pack" {
-      ignore = ["README.md", "*.hcl", "/deployments"]
-    }
-    registry {
-      use "docker-pull" {
-        image = "wallacepf/vaulicheck"
-        tag   = "latest"
-        username = var.docker_username
-        password = var.docker_password
-      }
+    use "docker-pull" {
+      image = "wallacepf/vaulicheck"
+      tag   = "latest"
     }
   }
+
 
   deploy {
     use "kubernetes" {
