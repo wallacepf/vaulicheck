@@ -32,6 +32,7 @@ var (
 	va = os.Getenv("VAULT_ADDR")
 	sf = os.Getenv("SECRET_FILE")
 	sp = os.Getenv("SECRET_PATH")
+	ms = os.Getenv("MY_SECRET")
 )
 
 func vaultSecretCheck() string {
@@ -61,6 +62,10 @@ func showIndexPage(c *gin.Context) {
 	timestamp := int64(res.ServerTimeUtc)
 	date := time.Unix(timestamp, 0)
 
+	if sf != "" {
+		ms = vaultSecretCheck()
+	}
+
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
 		"title":         "Vault Check",
 		"initialized":   res.Initialized,
@@ -69,7 +74,7 @@ func showIndexPage(c *gin.Context) {
 		"version":       res.Version,
 		"clusterName":   res.ClusterName,
 		"serverTimeUtc": date,
-		"secret":        vaultSecretCheck(),
+		"secret":        ms,
 		"secretPath":    sp,
 	})
 }
