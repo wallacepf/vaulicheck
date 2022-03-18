@@ -1,0 +1,76 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vaulicheck
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vaulicheck
+  namespace: vaulicheck
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaulicheck
+  namespace: vaulicheck
+  labels:
+    app: vaulicheck
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaulicheck
+  template:
+    metadata:
+      namespace: vaulicheck
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "vaulicheck"
+        vault.hashicorp.com/agent-inject-secret-secret.txt: "secret/data/mytestapp/test"
+        vault.hashicorp.com/agent-inject-template-secret.txt: |
+          {{- with secret "secret/data/mytestapp/test" -}}
+            {{ .Data.data.demosecret }}
+          {{- end -}}
+      labels:
+        app: vaulicheck
+    spec:
+      serviceAccountName: vaulicheck
+      containers:
+        - name: vaulicheck
+          image: ${artifact.image}:${artifact.tag}
+          env:
+            - name: VAULT_ADDR
+              value: "http://vault.vault.svc:8200"
+            - name: SECRET_FILE
+              value: "/vault/secrets/secret.txt"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vaulicheck
+  namespace: vaulicheck
+spec:
+  type: LoadBalancer
+  selector:
+    app: vaulicheck
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+
+# ---
+# apiVersion: route.openshift.io/v1
+# kind: Route
+# metadata:
+#   name: vaulicheck
+#   namespace: vaulicheck
+# spec:
+#   path: /
+#   to:
+#     kind: Service
+#     name: vaulicheck
+#   port:
+#     targetPort: 8080
