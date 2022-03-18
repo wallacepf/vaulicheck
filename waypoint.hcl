@@ -74,6 +74,8 @@ app "vaulicheck-wp" {
       use "docker-pull" {
         image = "wallacepf/vaulicheck"
         tag   = "latest"
+        username = var.docker_username
+        password = var.docker_password
       }
     }
   }
