@@ -84,6 +84,7 @@ app "vaulicheck-wp" {
     use "kubernetes" {
       namespace = "default"
       service_port = "8080"
+      service_account = "vaulicheck"
     }
   }
 
