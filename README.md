@@ -35,7 +35,7 @@ Once this was made to be used in K8s deployments, you will find an example of De
         ttl=24h
    ```
 
-##Screenshot
+## Screenshot
 
 ![App Screenshot](https://raw.githubusercontent.com/wallacepf/vaulicheck/master/screenshot/image.png)
 
